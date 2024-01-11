@@ -35,7 +35,7 @@ class Operator:
         """
         return self.number_of_operands
 
-    def calculate(self, list_of_operands: List[str]) -> float:
+    def calculate(self, list_of_operands: List[float]) -> float:
         """
         this function get operands and execute the operator on them
         :param list_of_operands: list of operands in the expression
@@ -89,7 +89,11 @@ class Multiplication(Operator):
         :param list_of_operands: list of operands in the expression
         :return: the multiplication of the numbers
         """
-        return list_of_operands[0] * list_of_operands[1]
+
+        answer = list_of_operands[0] * list_of_operands[1]
+        if answer == -0:
+            answer = 0
+        return answer
 
 
 class Division(Operator):
@@ -205,7 +209,10 @@ class Negation(Operator):
         :param list_of_operands: list of operands in the expression
         :return: the operand with the opposite sign
         """
-        return list_of_operands[0] * -1
+        answer = list_of_operands[0] * -1
+        if answer == -0:
+            answer = 0
+        return answer
 
 
 class Factorial(Operator):
@@ -215,16 +222,32 @@ class Factorial(Operator):
         """
         Operator.__init__(self, 6, 1, 1)
 
-    def calculate(self, list_of_operands: List[int]) -> int:
+    def calculate(self, list_of_operands: List[float]) -> float:
         """
         this function get operand and find its factorial
         :param list_of_operands: list of operands in the expression
         :return: the factorial of the operand
         """
+        if int(list_of_operands[0]) != list_of_operands[0]:
+            print("you cant do factorial on a decimal number!")
+            exit(1)
+
+        if int(list_of_operands[0]) < 0:
+            print("you cant do factorial on a negative number!")
+            exit(1)
+
         answer = 1
-        for number in range(1, list_of_operands[0] + 1):
+        for number in range(1, int(list_of_operands[0]) + 1):
             answer *= number
-        return answer
+        return float(answer)
+
+
+class OpenBracket(Operator):
+    def __init__(self):
+        """
+        this is a constructor for open bracket: (
+        """
+        Operator.__init__(self, 0, 0, 0)
 
 
 class CreateOperator:
@@ -235,5 +258,6 @@ class CreateOperator:
     @staticmethod
     def get_operator(str_operator: str) -> Operator:
         operators_dict = {"+": Addition, "-": Subtraction, "*": Multiplication, "/": Division, "^": Exponentiation,
-                          "@": Average, "$": Maximum, "&": Minimum, "%": Modulo, "~": Negation, "!": Factorial}
+                          "@": Average, "$": Maximum, "&": Minimum, "%": Modulo, "~": Negation, "!": Factorial,
+                          "(": OpenBracket}
         return operators_dict[str_operator]()
