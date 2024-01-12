@@ -2,10 +2,10 @@ from typing import List
 
 
 class Operator:
-    def __init__(self, priority: int, position: int, number_of_operands: int):
+    def __init__(self, priority: float, position: int, number_of_operands: int):
         """
         this is a constructor for a basic class representing an operator
-        :param priority: the integer priority of the operator in math expression
+        :param priority: the priority of the operator in math expression
         :param position: where is the operator positioned: 0 -between two operand,
         -1 - in the left of an operand, 1- in the right of am operand
         :param number_of_operands: number of operands this operator works on
@@ -34,6 +34,14 @@ class Operator:
         :return: the int number of operands
         """
         return self.number_of_operands
+
+    def set_priority(self, priority: float):
+        """
+        set the priority of the operand
+        :param priority: new priority
+        :return: None
+        """
+        self.priority = priority
 
     def calculate(self, list_of_operands: List[float]) -> float:
         """
@@ -250,6 +258,25 @@ class OpenBracket(Operator):
         Operator.__init__(self, 0, 0, 0)
 
 
+class MinUnary(Operator):
+    def __init__(self):
+        """
+        this is a constructor for minus unary: |
+        """
+        Operator.__init__(self, 2.5, -1, 1)
+
+    def calculate(self, list_of_operands: List[float]) -> float:
+        """
+        this function get operand and change its sign
+        :param list_of_operands: list of operands in the expression
+        :return: the operand with the opposite sign
+        """
+        answer = list_of_operands[0] * -1
+        if answer == -0:
+            answer = 0
+        return answer
+
+
 class CreateOperator:
     """
     this class is used for creating an operator object by a given string operator
@@ -259,5 +286,8 @@ class CreateOperator:
     def get_operator(str_operator: str) -> Operator:
         operators_dict = {"+": Addition, "-": Subtraction, "*": Multiplication, "/": Division, "^": Exponentiation,
                           "@": Average, "$": Maximum, "&": Minimum, "%": Modulo, "~": Negation, "!": Factorial,
-                          "(": OpenBracket}
+                          "(": OpenBracket, "|": MinUnary}
         return operators_dict[str_operator]()
+
+
+
