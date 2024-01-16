@@ -237,12 +237,10 @@ class Factorial(Operator):
         :return: the factorial of the operand
         """
         if int(list_of_operands[0]) != list_of_operands[0]:
-            print("you cant do factorial on a decimal number!")
-            exit(1)
+            raise SyntaxError("you cant do factorial on a decimal number!")
 
         if int(list_of_operands[0]) < 0:
-            print("you cant do factorial on a negative number!")
-            exit(1)
+            raise SyntaxError("you cant do factorial on a negative number!")
 
         answer = 1
         for number in range(1, int(list_of_operands[0]) + 1):
@@ -277,6 +275,32 @@ class MinUnary(Operator):
         return answer
 
 
+class Hashtag(Operator):
+    def __init__(self):
+        """
+        this is a constructor for hashtag unary: #
+        """
+        Operator.__init__(self, 6, 1, 1)
+
+    def calculate(self, list_of_operands: List[float]) -> float:
+        """
+        this function get operand and change its sign
+        :param list_of_operands: list of operands in the expression
+        :return: the operand with the opposite sign
+        """
+        if list_of_operands[0] < 0:
+            raise SyntaxError("hashtag can't operate on negative number!")
+
+        temp_list = str(list_of_operands[0])
+        sum_of_digits = 0
+        for digit in temp_list:
+            if digit.isnumeric():
+                digit = int(digit)
+                sum_of_digits += digit
+
+        return sum_of_digits
+
+
 class CreateOperator:
     """
     this class is used for creating an operator object by a given string operator
@@ -286,7 +310,7 @@ class CreateOperator:
     def get_operator(str_operator: str) -> Operator:
         operators_dict = {"+": Addition, "-": Subtraction, "*": Multiplication, "/": Division, "^": Exponentiation,
                           "@": Average, "$": Maximum, "&": Minimum, "%": Modulo, "~": Negation, "!": Factorial,
-                          "(": OpenBracket, "|": MinUnary}
+                          "(": OpenBracket, "|": MinUnary, "#": Hashtag}
         return operators_dict[str_operator]()
 
 

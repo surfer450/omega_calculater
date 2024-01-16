@@ -6,12 +6,15 @@ class InputReceiver:
     """
     this class is responsible for getting input form the user
     """
+
     @staticmethod
     def get_math_expression() -> str:
         """
         this function get an input math expression
         :return: the math expression
         """
+        print("Omega Calculator\n"
+              "-----------------")
         math_expression = input("Enter expression: ")
         return math_expression
 
@@ -40,18 +43,17 @@ class InputParser:
         while index < len(math_expr):
             if math_expr[index] == "-":
                 amount_removed = InputParser.remove_multiple_subtraction(math_expr, index)
-
-                if InputValidator.is_minus_unary(math_expr[index-1], index):
+                if InputValidator.is_minus_unary(math_expr[index - 1], index):
                     if amount_removed % 2 != 0:
                         math_expr.insert(index, "|")
+
                 else:
                     math_expr.insert(index, "-")
                     if amount_removed % 2 == 0:
-                        math_expr.insert(index+1, "|")
+                        math_expr.insert(index + 1, "|")
                         index += 1
 
             index += 1
-        print(math_expr)
         math_expr = ''.join(math_expr)
         return math_expr
 
@@ -66,8 +68,10 @@ class InputParser:
 
         amount_of_minus = 0
         while math_expr[beg_index] == '-':
+            if InputValidator.is_operator(math_expr[beg_index + 1]) and math_expr[beg_index + 1] != "-":
+                raise SyntaxError("illegal use of operator [-] ")
+            math_expr.pop(beg_index)
             amount_of_minus += 1
-            math_expr.remove('-')
         return amount_of_minus
 
     @staticmethod
@@ -90,7 +94,7 @@ class InputValidator:
         :param operator: a string to find if is operator
         :return: true if operator, false otherwise
         """
-        all_operators = ["+", "-", "*", "/", "^", "@", "$", "&", "%", "~", "!", "(", "|"]
+        all_operators = ["+", "-", "*", "/", "^", "@", "$", "&", "%", "~", "!", "(", "|", "#"]
         return operator in all_operators
 
     @staticmethod
@@ -101,9 +105,9 @@ class InputValidator:
         :param index: index to check
         :return: true if unary, else false
         """
-        return index == 0 or InputValidator.is_operator(last_symbol)
+        return index == 0 or (InputValidator.is_operator(last_symbol) and CreateOperator.get_operator(
+            last_symbol).get_number_of_operands() != 1) or last_symbol == "~"
 
-    @staticmethod
     def is_valid_symbol(symbol: str) -> bool:
         """
         this function check if a symbol is valid to appear inside a math expression
@@ -160,7 +164,7 @@ class InputValidator:
             if (operator_index != len(math_expr) - 1 and
                     (math_expr[operator_index + 1].isnumeric()
                      or math_expr[operator_index + 1] == "(" or math_expr[operator_index + 1] == "|"
-                        or math_expr[operator_index] == "|" and math_expr[operator_index + 1] == "~")):
+                     or math_expr[operator_index] == "~" and math_expr[operator_index + 1] == "|")):
                 if operator_index == 0:
                     return True
                 elif InputValidator.is_operator(math_expr[operator_index - 1]):
@@ -170,7 +174,8 @@ class InputValidator:
         else:
             if operator_index != 0 and (math_expr[operator_index - 1].isnumeric()
                                         or math_expr[operator_index - 1] == ")"
-                                        or CreateOperator.get_operator(math_expr[operator_index - 1]).get_position() == 1):
+                                        or CreateOperator.get_operator(
+                        math_expr[operator_index - 1]).get_position() == 1):
                 if operator_index == len(math_expr) - 1:
                     return True
                 elif InputValidator.is_operator(math_expr[operator_index + 1]) or math_expr[operator_index + 1] == ")":
@@ -223,6 +228,6 @@ class InputValidator:
                 operator = CreateOperator.get_operator(symbol)
                 if (operator.get_number_of_operands() == 1
                         and not InputValidator.is_operator_unary_valid(symbol_index, math_expr)):
-                    raise SyntaxError("you used the unary operator [{0}] in your expression in the wrong way".format(symbol))
+                    raise SyntaxError(
+                        "you used the unary operator [{0}] in your expression in the wrong way".format(symbol))
             symbol_index += 1
-

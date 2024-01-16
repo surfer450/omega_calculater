@@ -45,13 +45,16 @@ def find_number(expression: str, beg_index: int) -> Tuple[float, int]:
 
 
 def is_output_valid(operand_list: List[float]):
+    """
+    checks if output is valid(not imaginary and only one operand)
+    :param operand_list: list contains the output
+    :return: None
+    """
     if len(operand_list) != 1:
-        print("your syntax was wrong!")
-        exit(1)
+        raise SyntaxError("your syntax was wrong!")
 
     if isinstance(operand_list[0], complex):
-        print("you got a complex number!")
-        exit(1)
+        raise SyntaxError("you got a complex number!")
 
 
 def calculate_math_expression(math_expr: str) -> float | None:
@@ -98,6 +101,7 @@ def calculate_math_expression(math_expr: str) -> float | None:
 
 
 def main():
+
     try:
         math_expression = InputReceiver.get_math_expression()
         math_expression = InputParser.parse_math_expression(math_expression)
@@ -122,6 +126,11 @@ def main():
 
     except ValueError:
         print("you used the point '.' symbol incorrectly in your expression")
+
+    except KeyboardInterrupt:
+        print("\nyou finished the program!")
+
+    print("-----------------")
 
 
 if __name__ == "__main__":
