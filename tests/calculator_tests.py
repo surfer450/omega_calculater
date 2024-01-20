@@ -1,5 +1,5 @@
 import pytest
-import calculater
+from calc_engine import Calc
 from input_handler import InputParser, MathSyntaxError, InputValidator
 
 
@@ -21,7 +21,7 @@ class TestCalculator:
         with pytest.raises(MathSyntaxError):
             math_expression = InputParser.parse_math_expression(math_expression)
             InputValidator.validate_math_expression(math_expression)
-            calculater.calculate_math_expression(math_expression)
+            Calc.calculate_math_expression(math_expression)
 
     # simple operators tests
     @pytest.mark.parametrize("math_expression, result",
@@ -44,7 +44,7 @@ class TestCalculator:
     def test_simple_expressions(self, math_expression, result):
         math_expression = InputParser.parse_math_expression(math_expression)
         InputValidator.validate_math_expression(math_expression)
-        assert calculater.calculate_math_expression(math_expression) == result
+        assert Calc.calculate_math_expression(math_expression) == result
 
     # complicated expressions tests
     @pytest.mark.parametrize("math_expression, result",
@@ -73,4 +73,4 @@ class TestCalculator:
     def test_complicated_expressions(self, math_expression, result):
         math_expression = InputParser.parse_math_expression(math_expression)
         InputValidator.validate_math_expression(math_expression)
-        assert calculater.calculate_math_expression(math_expression) == result
+        assert Calc.calculate_math_expression(math_expression) == result

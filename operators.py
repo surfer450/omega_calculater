@@ -88,7 +88,8 @@ class Addition(Operator):
         :param list_of_operands: list of operands in the expression
         :return: the addition of the numbers
         """
-        return list_of_operands[0] + list_of_operands[1]
+        first_operand, second_operand = list_of_operands
+        return first_operand + second_operand
 
 
 class Subtraction(Operator):
@@ -104,7 +105,8 @@ class Subtraction(Operator):
         :param list_of_operands: list of operands in the expression
         :return: the subtraction of the numbers
         """
-        return list_of_operands[0] - list_of_operands[1]
+        first_operand, second_operand = list_of_operands
+        return first_operand - second_operand
 
 
 class Multiplication(Operator):
@@ -120,11 +122,8 @@ class Multiplication(Operator):
         :param list_of_operands: list of operands in the expression
         :return: the multiplication of the numbers
         """
-
-        answer = list_of_operands[0] * list_of_operands[1]
-        if answer == -0:
-            answer = 0
-        return answer
+        first_operand, second_operand = list_of_operands
+        return first_operand * second_operand
 
 
 class Division(Operator):
@@ -140,9 +139,10 @@ class Division(Operator):
         :param list_of_operands: list of operands in the expression
         :return: the division of the numbers
         """
-        if list_of_operands[1] == 0:
+        first_operand, second_operand = list_of_operands
+        if second_operand == 0:
             raise MathArithmeticError("an operand was divide by zero!")
-        return list_of_operands[0] / list_of_operands[1]
+        return first_operand / second_operand
 
 
 class Exponentiation(Operator):
@@ -158,7 +158,8 @@ class Exponentiation(Operator):
         :param list_of_operands: list of operands in the expression
         :return: the number after the execution of the operator
         """
-        answer = list_of_operands[0] ** list_of_operands[1]
+        first_operand, second_operand = list_of_operands
+        answer = first_operand ** second_operand
         if isinstance(answer, complex):
             raise MathArithmeticError("you got a complex number!")
         return answer
@@ -177,7 +178,8 @@ class Average(Operator):
         :param list_of_operands: list of operands in the expression
         :return: the average of the numbers
         """
-        return (list_of_operands[0] + list_of_operands[1]) / 2
+        first_operand, second_operand = list_of_operands
+        return (first_operand + second_operand) / 2
 
 
 class Maximum(Operator):
@@ -193,9 +195,10 @@ class Maximum(Operator):
         :param list_of_operands: list of operands in the expression
         :return: the bigger number
         """
-        if list_of_operands[0] > list_of_operands[1]:
-            return list_of_operands[0]
-        return list_of_operands[1]
+        first_operand, second_operand = list_of_operands
+        if first_operand > second_operand:
+            return first_operand
+        return second_operand
 
 
 class Minimum(Operator):
@@ -211,9 +214,10 @@ class Minimum(Operator):
         :param list_of_operands: list of operands in the expression
         :return: the smaller number
         """
-        if list_of_operands[0] < list_of_operands[1]:
-            return list_of_operands[0]
-        return list_of_operands[1]
+        first_operand, second_operand = list_of_operands
+        if first_operand < second_operand:
+            return first_operand
+        return second_operand
 
 
 class Modulo(Operator):
@@ -229,7 +233,8 @@ class Modulo(Operator):
         :param list_of_operands: list of operands in the expression
         :return: the remnant after division
         """
-        return list_of_operands[0] % list_of_operands[1]
+        first_operand, second_operand = list_of_operands
+        return first_operand % second_operand
 
 
 class Negation(Operator):
@@ -245,9 +250,8 @@ class Negation(Operator):
         :param list_of_operands: list of operands in the expression
         :return: the operand with the opposite sign
         """
-        answer = list_of_operands[0] * -1
-        if answer == -0:
-            answer = 0
+        operand = list_of_operands[0]
+        answer = operand * -1
         return answer
 
 
@@ -264,14 +268,15 @@ class Factorial(Operator):
         :param list_of_operands: list of operands in the expression
         :return: the factorial of the operand
         """
-        if int(list_of_operands[0]) != list_of_operands[0]:
+        operand = list_of_operands[0]
+        if int(operand) != operand:
             raise MathArithmeticError("you cant do factorial on a decimal number!")
 
-        if int(list_of_operands[0]) < 0:
+        if int(operand) < 0:
             raise MathArithmeticError("you cant do factorial on a negative number!")
 
         answer = 1
-        for number in range(1, int(list_of_operands[0]) + 1):
+        for number in range(1, int(operand) + 1):
             answer *= number
         return float(answer)
 
@@ -297,9 +302,8 @@ class MinUnary(Operator):
         :param list_of_operands: list of operands in the expression
         :return: the operand with the opposite sign
         """
-        answer = list_of_operands[0] * -1
-        if answer == -0:
-            answer = 0
+        operand = list_of_operands[0]
+        answer = operand * -1
         return answer
 
 
@@ -316,24 +320,30 @@ class Hashtag(Operator):
         :param list_of_operands: list of operands in the expression
         :return: the operand with the opposite sign
         """
-        if list_of_operands[0] < 0:
+        operand = list_of_operands[0]
+        if operand < 0:
             raise MathArithmeticError("hashtag can't operate on negative number!")
 
-        temp_list = str(list_of_operands[0])
+        temp_str = str(operand)
         sum_of_digits = 0
-        for digit in temp_list:
+        for digit in temp_str:
             if digit.isnumeric():
                 sum_of_digits += int(digit)
         return sum_of_digits
 
 
-class CreateOperator:
+class OperatorUtil:
     """
     this class is used for creating an operator object by a given string operator
     """
 
     @staticmethod
     def get_operator(str_operator: str, ) -> Operator:
+        """
+        this function return an Operator based on its symbol
+        :param str_operator: str symbol of the operators
+        :return: operator object
+        """
         operators_dict = {"+": Addition, "-": Subtraction, "*": Multiplication, "/": Division, "^": Exponentiation,
                           "@": Average, "$": Maximum, "&": Minimum, "%": Modulo, "~": Negation, "!": Factorial,
                           "(": OpenBracket, "|": MinUnary, "#": Hashtag}
@@ -350,9 +360,26 @@ class CreateOperator:
         return operator in all_operators
 
     @staticmethod
+    def is_priority_higher(first_operator: Operator, second_operator: Operator) -> bool:
+        """
+        this function finds if first operator priority is bigger
+        :param first_operator: first operator as operator obj
+        :param second_operator: second operator as operator obj
+        :return: true if first operator priority is bigger, else false
+        """
+        return first_operator.get_priority() >= second_operator.get_priority()
+
+    @staticmethod
     def change_operator_priority(math_expr: List[str], symbol_index: int, operator_obj: Operator):
+        """
+        this function change a priority of operator based on certain conditions
+        :param math_expr: math expr the operator is in
+        :param symbol_index: the index of operator
+        :param operator_obj: the operator object
+        :return: None
+        """
         symbol = math_expr[symbol_index]
         if symbol == "|":
-            if (symbol_index != 0 and CreateOperator.is_operator(math_expr[symbol_index - 1])
+            if (symbol_index != 0 and OperatorUtil.is_operator(math_expr[symbol_index - 1])
                     and math_expr[symbol_index - 1] != "("):
                 operator_obj.set_priority(7)

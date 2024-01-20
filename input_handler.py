@@ -1,4 +1,4 @@
-from operators import CreateOperator
+from operators import OperatorUtil
 from typing import List, Tuple
 
 
@@ -80,7 +80,7 @@ class InputParser:
 
         while math_expr[beg_index] == '-':
             if InputValidator.is_minus_unary(last_symbol, beg_index):
-                if CreateOperator.is_operator(math_expr[beg_index + 1]) and math_expr[beg_index + 1] not in ["-", "("]:
+                if OperatorUtil.is_operator(math_expr[beg_index + 1]) and math_expr[beg_index + 1] not in ["-", "("]:
                     raise MathSyntaxError("illegal use of operator [-] ")
             last_symbol = math_expr.pop(beg_index)
             amount_of_minus += 1
@@ -118,7 +118,6 @@ class InputParser:
             if symbol.isnumeric():
                 math_expression = InputParser.find_number(math_expression, symbol_index)
             symbol_index += 1
-        print(math_expression)
         return math_expression
 
 
@@ -132,7 +131,7 @@ class InputValidator:
         :param index: index to check
         :return: true if unary, else false
         """
-        return index == 0 or (CreateOperator.is_operator(last_symbol) and CreateOperator.get_operator(
+        return index == 0 or (OperatorUtil.is_operator(last_symbol) and OperatorUtil.get_operator(
             last_symbol).get_number_of_operands() != 1) or last_symbol in ["~", "-"]
 
     @staticmethod
@@ -142,7 +141,7 @@ class InputValidator:
         :param symbol: a symbol to check
         :return: true if valid, else false
         """
-        return CreateOperator.is_operator(symbol) or symbol.isnumeric() or symbol == ")" or symbol == "."
+        return OperatorUtil.is_operator(symbol) or symbol.isnumeric() or symbol == ")" or symbol == "."
 
     @staticmethod
     def is_open_bracket_legal(expr: List[str], open_bracket_index: int) -> bool:
@@ -152,7 +151,7 @@ class InputValidator:
         :param open_bracket_index: the index to check in
         :return: true if bracket legal, else false
         """
-        return ((open_bracket_index == 0 or CreateOperator.is_operator(expr[open_bracket_index - 1])
+        return ((open_bracket_index == 0 or OperatorUtil.is_operator(expr[open_bracket_index - 1])
                  or expr[open_bracket_index - 1] == "("))
 
     @staticmethod
@@ -163,7 +162,7 @@ class InputValidator:
         :param close_bracket_index: the index to check in
         :return: true if bracket legal, else false
         """
-        return (close_bracket_index == len(expr) - 1 or CreateOperator.is_operator(expr[close_bracket_index + 1])
+        return (close_bracket_index == len(expr) - 1 or OperatorUtil.is_operator(expr[close_bracket_index + 1])
                 or expr[close_bracket_index + 1] == ")")
 
     @staticmethod
@@ -182,36 +181,38 @@ class InputValidator:
     @staticmethod
     def is_operator_unary_left_valid(operator_index: int, math_expr: List[str]):
         """
-        this function gets an index of str left unary operator in a math expression and check if it is in a valid position
+        this function gets an index of str left unary operator in a
+        math expression and check if it is in a valid position
         :param operator_index: the index of the unary str
         :param math_expr: the math expression to check
         :return: true if unary is in valid position, else false
         """
         if operator_index != len(math_expr) - 1:
-            symbol, symbol_after = math_expr[operator_index], math_expr[operator_index+1]
-            if symbol_after.replace(".", "").isnumeric() or symbol_after in ["(", "|"] or (symbol == "~" and symbol_after == "|"):
+            symbol, symbol_after = math_expr[operator_index], math_expr[operator_index+1].replace(".", "")
+            if symbol_after.isnumeric() or symbol_after in ["(", "|"] or (symbol == "~" and symbol_after == "|"):
                 if operator_index == 0:
                     return True
                 symbol_before = math_expr[operator_index-1]
-                if CreateOperator.is_operator(symbol_before):
+                if OperatorUtil.is_operator(symbol_before):
                     return True
         return False
 
     @staticmethod
     def is_operator_unary_right_valid(operator_index: int, math_expr: List[str]):
         """
-        this function gets an index of str right unary operator in a math expression and check if it is in a valid position
+        this function gets an index of str right unary operator in
+        a math expression and check if it is in a valid position
         :param operator_index: the index of the unary str
         :param math_expr: the math expression to check
         :return: true if unary is in valid position, else false
         """
         if operator_index != 0:
-            symbol, symbol_before = math_expr[operator_index], math_expr[operator_index-1]
-            if symbol_before.replace(".", "").isnumeric() or symbol_before == ")" or CreateOperator.get_operator(symbol_before).get_position() == 1:
+            symbol, sym_before = math_expr[operator_index], math_expr[operator_index-1].replace(".", "")
+            if sym_before.isnumeric() or sym_before == ")" or OperatorUtil.get_operator(sym_before).get_position() == 1:
                 if operator_index == len(math_expr) - 1:
                     return True
                 symbol_after = math_expr[operator_index+1]
-                if CreateOperator.is_operator(symbol_after) or math_expr[operator_index + 1] == ")":
+                if OperatorUtil.is_operator(symbol_after) or math_expr[operator_index + 1] == ")":
                     return True
         return False
 
@@ -223,7 +224,7 @@ class InputValidator:
         :param math_expr: the math expression to check
         :return: true if unary is in valid position, else false
         """
-        operator = CreateOperator.get_operator(math_expr[operator_index])
+        operator = OperatorUtil.get_operator(math_expr[operator_index])
         if operator.get_position() == -1:
             return InputValidator.is_operator_unary_left_valid(operator_index, math_expr)
         else:
@@ -243,7 +244,7 @@ class InputValidator:
         """
         validate the whole math expression before looping through it and raise en exception if there was a problem
         :param math_expr: the math expression to check
-        :return:
+        :return: None
         """
         if not math_expr:
             raise MathSyntaxError("you entered nothing to calculate!")
@@ -277,9 +278,9 @@ class InputValidator:
         if element == ")":
             count_brackets += -1
 
-        if (CreateOperator.is_operator(element) and CreateOperator.get_operator(element).get_number_of_operands() == 1
+        if (OperatorUtil.is_operator(element) and OperatorUtil.get_operator(element).get_number_of_operands() == 1
                 and not InputValidator.is_operator_unary_valid(element_index, math_expr)):
-            raise MathSyntaxError("you used the unary operator [{0}] in your expression in the wrong way".format(element))
+            raise MathSyntaxError("you used unary operator [{0}] in your expression in the wrong way".format(element))
 
         if count_brackets < 0:
             raise MathSyntaxError("your use of brackets was wrong!")
@@ -314,8 +315,7 @@ class InputValidator:
         InputValidator.validate_whole_expression(math_expr)
 
         for element in math_expr:
-            symbol_index = 0
-            for symbol in element:
+            for symbol_index in range(len(element)):
                 InputValidator.validate_symbol_in_element(element, symbol_index)
                 symbol_index += 1
 
