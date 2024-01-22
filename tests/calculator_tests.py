@@ -1,13 +1,24 @@
 import pytest
 from calc_engine import Calc
 from input_handler import InputParser, MathSyntaxError, InputValidator
+from operators import MathArithmeticError
 
 
 class TestCalculator:
     def setup_method(self, method):
+        """
+        this function is used to present message before each test
+        :param method: method to present message before
+        :return: None
+        """
         print(f"Setting up {method}")
 
     def teardown_method(self, method):
+        """
+        this function is used to present message after each test
+        :param method: method to present message after
+        :return: None
+        """
         print(f"Tearing down {method}\n")
 
     # simple syntax errors tests
@@ -16,9 +27,45 @@ class TestCalculator:
                               "sagy bar joseph",
                               "",
                               " ",
-                              "\t"])
+                              "\t",
+                              "3++2",
+                              "2.2.2",
+                              ".2.",
+                              "!2",
+                              "2~",
+                              "2(2)+",
+                              "2!2",
+                              "(2)(2)",
+                              "(()",
+                              "())",
+                              "()",
+                              ")("])
     def test_syntax(self, math_expression):
+        """
+        test for syntax error
+        :param math_expression: math expression to check
+        :return: None
+        """
         with pytest.raises(MathSyntaxError):
+            math_expression = InputParser.parse_math_expression(math_expression)
+            InputValidator.validate_math_expression(math_expression)
+            Calc.calculate_math_expression(math_expression)
+
+    @pytest.mark.parametrize("math_expression",
+                             ["~1!",
+                              "~2#",
+                              "~1^0.5",
+                              "2.2!",
+                              "~--2!#",
+                              "(3/2)!",
+                              "(1-2)!"])
+    def test_arithmetic_error(self, math_expression):
+        """
+        test for arithmetic error
+        :param math_expression: math expression to check
+        :return: None
+        """
+        with pytest.raises(MathArithmeticError):
             math_expression = InputParser.parse_math_expression(math_expression)
             InputValidator.validate_math_expression(math_expression)
             Calc.calculate_math_expression(math_expression)
@@ -42,6 +89,11 @@ class TestCalculator:
                               ("1.1+2.1*3.1-2.2", 5.41),
                               ("32#!", 120)])
     def test_simple_expressions(self, math_expression, result):
+        """
+        test symple true expression
+        :param math_expression: math expression to check
+        :return: None
+        """
         math_expression = InputParser.parse_math_expression(math_expression)
         InputValidator.validate_math_expression(math_expression)
         assert Calc.calculate_math_expression(math_expression) == result
@@ -62,15 +114,20 @@ class TestCalculator:
                               ("((((~0!)-(1))^5!!)/10000 * 52.5463) & 102.23/10.24562", 0),
                               ("( ((((((2+1)*2)!)/5))) )^0.5 --- (((5)!*2+10)*10)^0.5 ", -38),
                               ("(10%111#^5.9234024) + ~-----2! + -10@32 + -6^2 +~2^4 + 6+~--3", 69),
-                              ("(10-3! + (4)! - (100/(4!+1)))!## ", 11),
+                              ("(10-3! + (4)! - (100/(4!+1)))!## ", 6),
                               ("(((10$-10)&-10   @   ((5&-5)$5)) % ((5$-5)&-5   @   ((2.5&-2.5)$2.5)))!", 1),
                               ("(~---( 1 2 3 4 5 6 7 8 9 ###%2)! @ ~-2!)^2*3+0.25 ", 7),
                               ("((((11.11#+22.22#)#!^2)*2)%10)                *2", 4),
-                              ("(1234.56789#%7^-10)##   @   (12#+~-----2!)", 6),
+                              ("(1234.56789#%7^-10)##   @   (12#+~-----2!)", 3.5),
                               ("((((((((~-3!!^~-3!)#/5) ^ 100)#!#) + ~-(5&2$4)!#)%7 / 10 ) ^ 2 * 1000) % 3)! + "
                                "~-------((((((((~-3!!^~-3!)#/5) ^ 100)#!#) + ~-(5&2$4)!#)%7 / 10 ) ^ 2 * 1000) % "
                                "3)!", 2)])
     def test_complicated_expressions(self, math_expression, result):
+        """
+        test complicated true expression
+        :param math_expression: math expression to check
+        :return: None
+        """
         math_expression = InputParser.parse_math_expression(math_expression)
         InputValidator.validate_math_expression(math_expression)
         assert Calc.calculate_math_expression(math_expression) == result

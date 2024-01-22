@@ -95,10 +95,14 @@ class InputParser:
         :param beg_index: index to start from
         :return: a tuple containing the new list
         """
-        str_num = ""
+        str_num, count_point = "", 0
         while beg_index < len(expression) and (expression[beg_index].isnumeric() or expression[beg_index] == "."):
             str_num += expression[beg_index]
+            if expression[beg_index] == ".":
+                count_point += 1
             expression.pop(beg_index)
+        if count_point > 1:
+            raise (MathSyntaxError("you used the point '.' symbol incorrectly in your expression!"))
         expression.insert(beg_index, str_num)
         return expression
 
@@ -117,6 +121,8 @@ class InputParser:
                 math_expression, symbol_index = InputParser.replace_multiple_subtraction(math_expression, symbol_index)
             if symbol.isnumeric():
                 math_expression = InputParser.find_number(math_expression, symbol_index)
+            if symbol == "|":
+                raise MathSyntaxError("Unrecognised symbol in your expression [{|}]")
             symbol_index += 1
         return math_expression
 
@@ -141,7 +147,7 @@ class InputValidator:
         :param symbol: a symbol to check
         :return: true if valid, else false
         """
-        return OperatorUtil.is_operator(symbol) or symbol.isnumeric() or symbol == ")" or symbol == "."
+        return OperatorUtil.is_operator(symbol) or symbol.isnumeric() or symbol in [")", "."]
 
     @staticmethod
     def is_open_bracket_legal(expr: List[str], open_bracket_index: int) -> bool:
@@ -179,7 +185,7 @@ class InputValidator:
         return False
 
     @staticmethod
-    def is_operator_unary_left_valid(operator_index: int, math_expr: List[str]):
+    def is_operator_unary_left_valid(operator_index: int, math_expr: List[str]) -> bool:
         """
         this function gets an index of str left unary operator in a
         math expression and check if it is in a valid position
@@ -198,7 +204,7 @@ class InputValidator:
         return False
 
     @staticmethod
-    def is_operator_unary_right_valid(operator_index: int, math_expr: List[str]):
+    def is_operator_unary_right_valid(operator_index: int, math_expr: List[str]) -> bool:
         """
         this function gets an index of str right unary operator in
         a math expression and check if it is in a valid position

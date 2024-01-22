@@ -140,8 +140,6 @@ class Division(Operator):
         :return: the division of the numbers
         """
         first_operand, second_operand = list_of_operands
-        if second_operand == 0:
-            raise MathArithmeticError("an operand was divide by zero!")
         return first_operand / second_operand
 
 
@@ -329,6 +327,8 @@ class Hashtag(Operator):
         for digit in temp_str:
             if digit.isnumeric():
                 sum_of_digits += int(digit)
+            if digit == "e":
+                return sum_of_digits
         return sum_of_digits
 
 

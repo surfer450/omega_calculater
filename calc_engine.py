@@ -6,7 +6,6 @@ BRACKET_STATE, END_STATE, PRIORITY_STATE = 0, 1, 2
 
 
 class Calc:
-
     @staticmethod
     def execute_last_operator_in_operator_list(operator_list: List[Operator], operand_list: List[float]):
         """

@@ -23,6 +23,9 @@ def main():
     except OverflowError:
         print("Over flow Error: number too big!")
 
+    except ZeroDivisionError:
+        print("Zero Division Error: can't dived by zero")
+
     except KeyboardInterrupt:
         print("\nyou finished the program!")
 
